@@ -37,13 +37,31 @@ app.get('/health', (req, res) => {
 app.use('/api/chat', chatRoutes);
 
 // MongoDB Connection
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/chatapp';
+const MONGODB_URI = process.env.MONGODB_URI;
+
+if (!MONGODB_URI) {
+  console.error('❌ MONGODB_URI environment variable is not set');
+  process.exit(1);
+}
+
 mongoose.connect(MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
-.then(() => console.log('MongoDB connected successfully'))
-.catch(err => console.error('MongoDB connection error:', err));
+.then(() => {
+  console.log('✅ MongoDB Atlas connected successfully');
+  console.log('🔗 Connected to:', MONGODB_URI.split('@')[1]?.split('/')[0] || 'MongoDB Atlas');
+})
+.catch(err => {
+  console.error('❌ MongoDB connection failed:', err.message);
+  
+  if (err.message.includes('ECONNREFUSED')) {
+    console.error('💡 This error suggests you\'re connecting to localhost instead of MongoDB Atlas');
+    console.error('🔧 Check your MONGODB_URI environment variable');
+  }
+  
+  process.exit(1);
+});
 
 // Socket.IO Connection Handling (same as before)
 io.on('connection', (socket) => {
