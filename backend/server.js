@@ -5,6 +5,18 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
 
+// Debug environment variables
+console.log('🔍 Current working directory:', process.cwd());
+console.log('🔍 MONGODB_URI exists:', !!process.env.MONGODB_URI);
+console.log('🔍 NODE_ENV:', process.env.NODE_ENV);
+
+// Check if .env file exists
+const fs = require('fs');
+const path = require('path');
+const envPath = path.join(process.cwd(), '.env');
+console.log('🔍 .env file exists:', fs.existsSync(envPath));
+
+
 const chatRoutes = require('./routes/chat');
 const Room = require('./models/Room');
 const Message = require('./models/Message');
